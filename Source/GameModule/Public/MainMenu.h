@@ -38,7 +38,13 @@ public:
 	float TextSize;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float TextHeightPadding;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FColor BackgroundColor;
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	float GetDesireHeight();
 
 protected:
 	virtual void NativePreConstruct() override;
