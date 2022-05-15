@@ -64,7 +64,7 @@ void UMainMenu::NativePreConstruct()
 
 void UMainMenu::GameStart()
 {
-	
+	UE_LOG(LogMainMenu, Warning, TEXT("Todo."));
 }
 
 void UMainMenu::OpenOption()
