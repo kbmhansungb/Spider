@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "../GameModule.h"
 #include "Blueprint/UserWidget.h"
 #include "MainMenu.generated.h"
 
@@ -11,17 +12,7 @@ class UTextBlock;
 class UButton;
 
 /*
- * 
- */
-UCLASS(BlueprintType)
-class GAMEMODULE_API UMainMenu : public UUserWidget
-{
-	GENERATED_BODY()
-	
-};
-
-/*
-*
+*	 A class to implement the main menu button, it is desireable to use it in the main menu.
 */
 UCLASS(BlueprintType)
 class GAMEMODULE_API UMainMenuButton : public UUserWidget
@@ -31,6 +22,18 @@ class GAMEMODULE_API UMainMenuButton : public UUserWidget
 public:
 	UMainMenuButton(const FObjectInitializer& ObjectInitializer);
 
+protected:
+	virtual void NativePreConstruct() override;
+
+public:
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	float GetDesireHeight();
+
+	FORCEINLINE UOverlay* GetOverlay() { return Overlay; }
+	FORCEINLINE UButton* GetButton() { return Button; }
+	FORCEINLINE UTextBlock* GetTextBlock() { return TextBlock; }
+
+public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FText Text;
 
@@ -43,12 +46,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FColor BackgroundColor;
 
-	UFUNCTION(BlueprintCallable, BlueprintPure)
-	float GetDesireHeight();
-
 protected:
-	virtual void NativePreConstruct() override;
-
 	UPROPERTY(meta = (BindWidget))
 	UOverlay* Overlay;
 
@@ -57,4 +55,38 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* TextBlock;
+};
+
+/*
+ * 
+ */
+UCLASS(BlueprintType)
+class GAMEMODULE_API UMainMenu : public UUserWidget
+{
+	GENERATED_BODY()
+	
+public:
+	UMainMenu(const FObjectInitializer& ObjectInitializer);
+
+protected:
+	virtual void NativePreConstruct() override;
+
+	UFUNCTION(BlueprintCallable)
+	void GameStart();
+
+	UFUNCTION(BlueprintCallable)
+	void OpenOption();
+
+	UFUNCTION(BlueprintCallable)
+	void ExitGame();
+
+protected:
+	UPROPERTY(meta = (BindWidget))
+	UMainMenuButton* GameStartButton;
+
+	UPROPERTY(meta = (BindWidget))
+	UMainMenuButton* OptionButton;
+
+	UPROPERTY(meta = (BindWidget))
+	UMainMenuButton* ExitButton;
 };
