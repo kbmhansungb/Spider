@@ -9,6 +9,6 @@ public class SpiderEditorTarget : TargetRules
 	{
 		Type = TargetType.Editor;
 		DefaultBuildSettings = BuildSettingsVersion.V2;
-		ExtraModuleNames.AddRange( new string[] { "Spider" } );
+		ExtraModuleNames.AddRange( new string[] { "Spider", "GameModule" } );
 	}
 }
