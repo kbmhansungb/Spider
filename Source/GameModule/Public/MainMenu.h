@@ -10,6 +10,7 @@
 class UOverlay;
 class UTextBlock;
 class UButton;
+class UWidgetAnimation;
 
 /*
 *	 A class to implement the main menu button, it is desireable to use it in the main menu.
@@ -26,8 +27,8 @@ protected:
 	virtual void NativePreConstruct() override;
 
 public:
-	UFUNCTION(BlueprintCallable, BlueprintPure)
-	float GetDesireHeight();
+	//UFUNCTION(BlueprintCallable, BlueprintPure)
+	//float GetDesireHeight();
 
 	FORCEINLINE UOverlay* GetOverlay() { return Overlay; }
 	FORCEINLINE UButton* GetButton() { return Button; }
@@ -40,8 +41,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float TextSize;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float TextHeightPadding;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	//float TextHeightPadding;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FColor BackgroundColor;
@@ -70,16 +71,24 @@ public:
 
 protected:
 	virtual void NativePreConstruct() override;
+	virtual void NativeConstruct() override;
+
+	UFUNCTION()
+	bool IsBusy();
+
+	UFUNCTION(BlueprintCallable)
+	void Prepare();
+	
+	UFUNCTION(BlueprintCallable)
+	void ExitGame();
 
 	UFUNCTION(BlueprintCallable)
 	void GameStart();
 
 	UFUNCTION(BlueprintCallable)
-	void OpenOption();
+	void OnClicked_StartGame();
 
-	UFUNCTION(BlueprintCallable)
-	void ExitGame();
-
+	// MainMenu Buttons
 protected:
 	UPROPERTY(meta = (BindWidget))
 	UMainMenuButton* GameStartButton;
@@ -89,4 +98,39 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 	UMainMenuButton* ExitButton;
+	
+	// Animations
+protected:
+	UPROPERTY(meta = (BindWidgetAnim), Transient)
+	UWidgetAnimation* FirstToMainMenuAnimation;
+
+	UFUNCTION(BlueprintCallable)
+	void PlayFirstToMainMenuAnimation();
+
+	UPROPERTY(meta = (BindWidgetAnim), Transient)
+	UWidgetAnimation* ReadyToPlayAnimation;
+
+	UFUNCTION(BlueprintCallable)
+	void PlayReadyToPlayAnimation();
+
+	UPROPERTY(meta = (BindWidgetAnim), Transient)
+	UWidgetAnimation* MainMenuToPrepareAnimation;
+
+	UFUNCTION(BlueprintCallable)
+	void PlayMainMenuToPrepareAnimation();
+
+	UPROPERTY(meta = (BindWidgetAnim), Transient)
+	UWidgetAnimation* MainMenuToOptionAnimation;
+
+	UFUNCTION(BlueprintCallable)
+	void PlayMainMenuToOptionAnimation();
+
+	UFUNCTION(BlueprintCallable)
+	void PlayOptionToMainMenuAnimation();
+
+	UPROPERTY(meta = (BindWidgetAnim), Transient)
+	UWidgetAnimation* MainMenuToExitAnimation;
+
+	UFUNCTION(BlueprintCallable)
+	void PlayMainMenuToExitAnimation();
 };
