@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "../GameModule.h"
 #include "Blueprint/UserWidget.h"
 #include "MainMenu.generated.h"
 
@@ -12,10 +11,13 @@ class UTextBlock;
 class UButton;
 class UWidgetAnimation;
 
+
+
 /*
-*	 A class to implement the main menu button, it is desireable to use it in the main menu.
+*	 A class to implement the main menu button, 
+*	it is desirable to use it in the main menu.
 */
-UCLASS(BlueprintType)
+UCLASS()
 class GAMEMODULE_API UMainMenuButton : public UUserWidget
 {
 	GENERATED_BODY()
@@ -25,11 +27,7 @@ public:
 
 protected:
 	virtual void NativePreConstruct() override;
-
 public:
-	//UFUNCTION(BlueprintCallable, BlueprintPure)
-	//float GetDesireHeight();
-
 	FORCEINLINE UOverlay* GetOverlay() { return Overlay; }
 	FORCEINLINE UButton* GetButton() { return Button; }
 	FORCEINLINE UTextBlock* GetTextBlock() { return TextBlock; }
@@ -40,9 +38,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float TextSize;
-
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	//float TextHeightPadding;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FColor BackgroundColor;
@@ -59,9 +54,9 @@ protected:
 };
 
 /*
- * 
+ *	 
  */
-UCLASS(BlueprintType)
+UCLASS()
 class GAMEMODULE_API UMainMenu : public UUserWidget
 {
 	GENERATED_BODY()
@@ -73,64 +68,105 @@ protected:
 	virtual void NativePreConstruct() override;
 	virtual void NativeConstruct() override;
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	bool IsBusy();
 
-	UFUNCTION(BlueprintCallable)
-	void Prepare();
+private:
+	UWidgetAnimation* LastAnimation;
+protected:
+	void PlayAnimation(UWidgetAnimation* NewAnimation);
+
+#pragma region First
 	
+private:
+	void InitFirst();
+protected:
 	UFUNCTION(BlueprintCallable)
-	void ExitGame();
+	void OpenFirst();
 
+public:
+	UPROPERTY(meta = (BindWidgetAnim), Transient)
+	UWidgetAnimation* OpenFirstAnimation;
+
+#pragma endregion
+
+#pragma region MainMenu
+
+private:
+	void InitMainMenu();
+protected:
 	UFUNCTION(BlueprintCallable)
-	void GameStart();
+	void OpenMainMenu();
 
-	UFUNCTION(BlueprintCallable)
-	void OnClicked_StartGame();
+public:
+	UPROPERTY(meta = (BindWidgetAnim), Transient)
+	UWidgetAnimation* OpenMainMenuAnimation;
+	
 
-	// MainMenu Buttons
 protected:
 	UPROPERTY(meta = (BindWidget))
 	UMainMenuButton* GameStartButton;
+	
+	UFUNCTION(BlueprintCallable)
+	void OnClicked_GameStartButton();
 
 	UPROPERTY(meta = (BindWidget))
 	UMainMenuButton* OptionButton;
 
+	UFUNCTION(BlueprintCallable)
+	void OnClicked_OptionButton();
+
 	UPROPERTY(meta = (BindWidget))
 	UMainMenuButton* ExitButton;
+
+	UFUNCTION(BlueprintCallable)
+	void OnClicked_ExitButton();
 	
-	// Animations
+#pragma endregion
+
+#pragma region Option
+
+private:
+	void InitOption();
+protected:
+	UFUNCTION(BlueprintCallable)
+	void OpenOption();
+
 protected:
 	UPROPERTY(meta = (BindWidgetAnim), Transient)
-	UWidgetAnimation* FirstToMainMenuAnimation;
+	UWidgetAnimation* OpenOptionAnimation;
 
+#pragma endregion
+
+#pragma region Prepare
+
+private:
+	void InitPrepare();
+protected:
 	UFUNCTION(BlueprintCallable)
-	void PlayFirstToMainMenuAnimation();
+	void OpenPrepare();
 
+protected:
 	UPROPERTY(meta = (BindWidgetAnim), Transient)
-	UWidgetAnimation* ReadyToPlayAnimation;
+	UWidgetAnimation* OpenPrePareAnimation;
 
+#pragma endregion
+
+#pragma region Exit
+
+private:
+	void InitExit();
+protected:
 	UFUNCTION(BlueprintCallable)
-	void PlayReadyToPlayAnimation();
+	void OpenExit();
 
+protected:
 	UPROPERTY(meta = (BindWidgetAnim), Transient)
-	UWidgetAnimation* MainMenuToPrepareAnimation;
-
+	UWidgetAnimation* OpenExitAnimation;
+	
 	UFUNCTION(BlueprintCallable)
-	void PlayMainMenuToPrepareAnimation();
+	void ExitGame();
 
-	UPROPERTY(meta = (BindWidgetAnim), Transient)
-	UWidgetAnimation* MainMenuToOptionAnimation;
+#pragma endregion
 
-	UFUNCTION(BlueprintCallable)
-	void PlayMainMenuToOptionAnimation();
-
-	UFUNCTION(BlueprintCallable)
-	void PlayOptionToMainMenuAnimation();
-
-	UPROPERTY(meta = (BindWidgetAnim), Transient)
-	UWidgetAnimation* MainMenuToExitAnimation;
-
-	UFUNCTION(BlueprintCallable)
-	void PlayMainMenuToExitAnimation();
 };

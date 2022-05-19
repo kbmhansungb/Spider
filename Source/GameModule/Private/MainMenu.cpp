@@ -1,6 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "MainMenu.h"
+#include "GameModule/GameModule.h"
+
 #include "Components/Overlay.h"
 #include "Components/OverlaySlot.h"
 
@@ -16,53 +18,93 @@ UMainMenuButton::UMainMenuButton(const FObjectInitializer& ObjectInitializer)
 	: UUserWidget(ObjectInitializer)
 	, Text(FText::FromString(FString("Text in here.")))
 	, TextSize(33.0f)
-	//, TextHeightPadding(6.4f)
 	, BackgroundColor(20U, 20U, 20U, 90U)
 {
 }
 
 void UMainMenuButton::NativePreConstruct()
 {
+	Super::NativePreConstruct();
+
 	Button->SetBackgroundColor(BackgroundColor);
 
 	TextBlock->SetText(Text);
 	FSlateFontInfo FontInfo = TextBlock->Font;
 	FontInfo.Size = TextSize;
 	TextBlock->SetFont(FontInfo);
-	//UOverlaySlot* OverlaySlot = Cast<UOverlaySlot>(TextBlock->Slot);
-	//if (OverlaySlot == nullptr)
-	//{
-	//	UE_LOG(LogMainMenu, Error, TEXT("TextBlock's parent is not OverlaySlot."));
-	//}
-	//else
-	//{
-	//	OverlaySlot->SetPadding(FMargin(0.0f, TextHeightPadding));
-	//}
 }
-
-//float UMainMenuButton::GetDesireHeight()
-//{
-//	return TextSize + 2 * TextHeightPadding;
-//}
 
 UMainMenu::UMainMenu(const FObjectInitializer& ObjectInitializer)
 	: UUserWidget(ObjectInitializer)
+	, LastAnimation(nullptr)
 {
 }
 
 void UMainMenu::NativePreConstruct()
 {
+	Super::NativePreConstruct();
+}
+
+void UMainMenu::NativeConstruct()
+{
+	Super::NativeConstruct();
+
+	InitFirst();
+	InitMainMenu();
+	InitOption();
+	InitPrepare();
+	InitExit();
+
+	OpenFirst();
+}
+
+bool UMainMenu::IsBusy()
+{
+	return IsPlayingAnimation() == true;
+}
+
+void UMainMenu::PlayAnimation(UWidgetAnimation* NewAnimation)
+{
+	if (LastAnimation == NewAnimation)
+	{
+		UE_LOG(LogMainMenu, Warning, TEXT("Executed the animation that was running."));
+		return;
+	}
+
+	if (LastAnimation)
+	{
+		UUserWidget::PlayAnimation(LastAnimation, 0.0f, 1, EUMGSequencePlayMode::Reverse);
+	}
+
+	if (NewAnimation)
+	{
+		UUserWidget::PlayAnimation(NewAnimation);
+	}
+}
+
+void UMainMenu::InitFirst()
+{
+
+}
+
+void UMainMenu::OpenFirst()
+{
+	PlayAnimation(OpenFirstAnimation);
+}
+
+void UMainMenu::InitMainMenu()
+{
 	// MainMenu -> Prepare
 	{
 		FScriptDelegate ScriptDelegate;
-		ScriptDelegate.BindUFunction(this, FName("PlayMainMenuToPrepareAnimation"));
+		ScriptDelegate.BindUFunction(this, FName("OnClicked_GameStartButton"));
 		GameStartButton->GetButton()->OnClicked.Add(ScriptDelegate);
 	}
 
 	// MainMenu -> Option
 	{
 		FScriptDelegate ScriptDelegate;
-		ScriptDelegate.BindUFunction(this, FName("PlayMainMenuToOptionAnimation"));
+		ScriptDelegate.BindUFunction(this, FName("OnClicked_OptionButton"));
 		OptionButton->GetButton()->OnClicked.Add(ScriptDelegate);
 	}
 
@@ -74,79 +116,63 @@ void UMainMenu::NativePreConstruct()
 	}
 }
 
-void UMainMenu::NativeConstruct()
+void UMainMenu::OpenMainMenu()
 {
-	Super::NativeConstruct();
-
-	// First -> MainMenu
-	PlayFirstToMainMenuAnimation();
+	PlayAnimation(OpenMainMenuAnimation);
 }
 
-bool UMainMenu::IsBusy()
-{
-	return IsPlayingAnimation() == true;
-}
-
-void UMainMenu::Prepare()
-{
-}
-
-void UMainMenu::ExitGame()
-{
-	UKismetSystemLibrary::QuitGame(this, GetPlayerContext().GetPlayerController(), EQuitPreference::Quit, true);
-}
-
-void UMainMenu::OnClicked_StartGame()
+void UMainMenu::OnClicked_GameStartButton()
 {
 	if (IsBusy())
 	{
 		return;
 	}
 
-	UE_LOG(LogMainMenu, Warning, TEXT("Todo."));
+	OpenPrepare();
 }
 
-void UMainMenu::PlayFirstToMainMenuAnimation()
+void UMainMenu::OnClicked_OptionButton()
 {
-	PlayAnimation(FirstToMainMenuAnimation);
+	OpenOption();
 }
 
-void UMainMenu::PlayReadyToPlayAnimation()
+void UMainMenu::OnClicked_ExitButton()
 {
-	PlayAnimation(ReadyToPlayAnimation);
+	OpenExit();
 }
 
-void UMainMenu::PlayMainMenuToPrepareAnimation()
+void UMainMenu::InitOption()
 {
-	UnbindAllFromAnimationFinished(MainMenuToPrepareAnimation);
-	FScriptDelegate StartScriptDelegate;
-	StartScriptDelegate.BindUFunction(this, FName("Prepare"));
-	BindToAnimationStarted(MainMenuToPrepareAnimation, FWidgetAnimationDynamicEvent(StartScriptDelegate));
 
-	UnbindAllFromAnimationFinished(MainMenuToPrepareAnimation);
-	FScriptDelegate FinishScriptDelegate;
-	FinishScriptDelegate.BindUFunction(this, FName("PlayReadyToPlayAnimation"));
-	BindToAnimationFinished(MainMenuToPrepareAnimation, FWidgetAnimationDynamicEvent(FinishScriptDelegate));
-
-	PlayAnimation(MainMenuToPrepareAnimation);
 }
 
-void UMainMenu::PlayMainMenuToOptionAnimation()
+void UMainMenu::OpenOption()
 {
-	PlayAnimation(MainMenuToOptionAnimation);
+	PlayAnimation(OpenOptionAnimation);
 }
 
-void UMainMenu::PlayOptionToMainMenuAnimation()
+void UMainMenu::InitPrepare()
 {
-	PlayAnimation(MainMenuToOptionAnimation, 0.0f, 1, EUMGSequencePlayMode::Reverse);
 }
 
-void UMainMenu::PlayMainMenuToExitAnimation()
+void UMainMenu::OpenPrepare()
 {
-	UnbindAllFromAnimationFinished(MainMenuToExitAnimation);
-	FScriptDelegate FinishScriptDelegate;
-	FinishScriptDelegate.BindUFunction(this, FName("ExitGame"));
-	BindToAnimationFinished(MainMenuToExitAnimation, FWidgetAnimationDynamicEvent(FinishScriptDelegate));
-	
-	PlayAnimation(MainMenuToExitAnimation);
+	PlayAnimation(OpenPrePareAnimation);
+}
+
+void UMainMenu::InitExit()
+{
+	FWidgetAnimationDynamicEvent FinishedScriptDelegate;
+	FinishedScriptDelegate.BindUFunction(this, FName("ExitGame"));
+	BindToAnimationFinished(OpenExitAnimation, FinishedScriptDelegate);
+}
+
+void UMainMenu::OpenExit()
+{
+	PlayAnimation(OpenExitAnimation);
+}
+
+void UMainMenu::ExitGame()
+{
+	UKismetSystemLibrary::QuitGame(this, GetPlayerContext().GetPlayerController(), EQuitPreference::Quit, true);
 }
