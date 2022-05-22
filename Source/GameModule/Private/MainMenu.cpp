@@ -18,15 +18,12 @@ UMainMenuButton::UMainMenuButton(const FObjectInitializer& ObjectInitializer)
 	: UUserWidget(ObjectInitializer)
 	, Text(FText::FromString(FString("Text in here.")))
 	, TextSize(33.0f)
-	, BackgroundColor(20U, 20U, 20U, 90U)
 {
 }
 
 void UMainMenuButton::NativePreConstruct()
 {
 	Super::NativePreConstruct();
-
-	Button->SetBackgroundColor(BackgroundColor);
 
 	TextBlock->SetText(Text);
 	FSlateFontInfo FontInfo = TextBlock->Font;
@@ -55,7 +52,8 @@ void UMainMenu::NativeConstruct()
 	InitPrepare();
 	InitExit();
 
-	OpenFirst();
+	//OpenFirst();
+	ProcessFirst();
 }
 
 bool UMainMenu::IsBusy()
@@ -63,7 +61,7 @@ bool UMainMenu::IsBusy()
 	return IsPlayingAnimation() == true;
 }
 
-void UMainMenu::PlayAnimation(UWidgetAnimation* NewAnimation)
+void UMainMenu::PlayMainMenuAniamtion(UWidgetAnimation* NewAnimation)
 {
 	if (LastAnimation == NewAnimation)
 	{
@@ -73,23 +71,67 @@ void UMainMenu::PlayAnimation(UWidgetAnimation* NewAnimation)
 
 	if (LastAnimation)
 	{
-		UUserWidget::PlayAnimation(LastAnimation, 0.0f, 1, EUMGSequencePlayMode::Reverse);
+		PlayAnimation(LastAnimation, 0.0f, 1, EUMGSequencePlayMode::Reverse);
 	}
 
 	if (NewAnimation)
 	{
-		UUserWidget::PlayAnimation(NewAnimation);
+		PlayAnimation(NewAnimation);
+		LastAnimation = NewAnimation;
 	}
+}
+
+void UMainMenu::SetForceMainMenuAnimation(UWidgetAnimation* NewAnimation)
+{
+	LastAnimation = NewAnimation;
 }
 
 void UMainMenu::InitFirst()
 {
-
+	//FWidgetAnimationDynamicEvent FinishedScriptDelegate;
+	//FinishedScriptDelegate.BindUFunction(this, FName("ProcessFirst"));
+	//BindToAnimationFinished(OpenFirstAnimation, FinishedScriptDelegate);
 }
 
-void UMainMenu::OpenFirst()
+//void UMainMenu::OpenFirst()
+//{
+//	IsNotEqualLastAnimation(OpenFirstAnimation);
+//
+//	PlayMainMenuAniamtion(OpenFirstAnimation);
+//}
+
+bool TestDelay = false;
+
+void UMainMenu::ProcessFirst()
 {
-	PlayAnimation(OpenFirstAnimation);
+	SetForceMainMenuAnimation(OpenFirstAnimation);
+	
+	FTimerHandle LoopTimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(LoopTimerHandle, [this]() { this->ProcessLoop(); }, 0.03f, false);
+
+	FTimerHandle ConstDelayTimerHandle;
+	TestDelay = false;
+	GetWorld()->GetTimerManager().SetTimer(ConstDelayTimerHandle, []() { TestDelay = true; }, 2.0f, false);
+}
+
+void UMainMenu::ProcessLoop()
+{
+	bool IsLoading = true;
+
+	if (TestDelay)
+	{
+		IsLoading = false;
+	}
+
+	if (IsLoading)
+	{
+		FTimerHandle TimerHandle;
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]() { this->ProcessLoop(); }, 0.03f, false);
+	}
+	else
+	{
+		OpenMainMenu();
+	}
 }
 
 void UMainMenu::InitMainMenu()
@@ -111,14 +153,14 @@ void UMainMenu::InitMainMenu()
 	// MainMenu -> Exit
 	{
 		FScriptDelegate ScriptDelegate;
-		ScriptDelegate.BindUFunction(this, FName("PlayMainMenuToExitAnimation"));
+		ScriptDelegate.BindUFunction(this, FName("OpenExit"));
 		ExitButton->GetButton()->OnClicked.Add(ScriptDelegate);
 	}
 }
 
 void UMainMenu::OpenMainMenu()
 {
-	PlayAnimation(OpenMainMenuAnimation);
+	PlayMainMenuAniamtion(OpenMainMenuAnimation);
 }
 
 void UMainMenu::OnClicked_GameStartButton()
@@ -148,7 +190,7 @@ void UMainMenu::InitOption()
 
 void UMainMenu::OpenOption()
 {
-	PlayAnimation(OpenOptionAnimation);
+	PlayMainMenuAniamtion(OpenOptionAnimation);
 }
 
 void UMainMenu::InitPrepare()
@@ -157,7 +199,7 @@ void UMainMenu::InitPrepare()
 
 void UMainMenu::OpenPrepare()
 {
-	PlayAnimation(OpenPrePareAnimation);
+	PlayMainMenuAniamtion(OpenPrePareAnimation);
 }
 
 void UMainMenu::InitExit()
@@ -169,10 +211,11 @@ void UMainMenu::InitExit()
 
 void UMainMenu::OpenExit()
 {
-	PlayAnimation(OpenExitAnimation);
+	PlayMainMenuAniamtion(OpenExitAnimation);
 }
 
 void UMainMenu::ExitGame()
 {
+	UE_LOG(LogMainMenu, Display, TEXT("Exit game is called."));
 	UKismetSystemLibrary::QuitGame(this, GetPlayerContext().GetPlayerController(), EQuitPreference::Quit, true);
 }

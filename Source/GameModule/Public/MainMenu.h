@@ -39,9 +39,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float TextSize;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FColor BackgroundColor;
-
 protected:
 	UPROPERTY(meta = (BindWidget))
 	UOverlay* Overlay;
@@ -74,15 +71,29 @@ protected:
 private:
 	UWidgetAnimation* LastAnimation;
 protected:
-	void PlayAnimation(UWidgetAnimation* NewAnimation);
+	void PlayMainMenuAniamtion(UWidgetAnimation* NewAnimation);
+	void SetForceMainMenuAnimation(UWidgetAnimation* NewAnimation);
+	//FORCEINLINE bool IsEqualLastAnimation(UWidgetAnimation* DesiredLastAnimation) { return LastAnimation == DesiredLastAnimation; }
+	//FORCEINLINE bool IsNotEqualLastAnimation(UWidgetAnimation* DesiredLastAnimation) { return LastAnimation != DesiredLastAnimation; }
 
 #pragma region First
-	
+	//  If the main menu is created and then executed,
+	// the main menu is displayed after executing delayed loading in the first state.
+	//
+	//  Therefore, First should be written to pass the state to MainMenu
+	// after achieving the goal.
+
 private:
 	void InitFirst();
 protected:
+	//UFUNCTION(BlueprintCallable)
+	//void OpenFirst();
+
 	UFUNCTION(BlueprintCallable)
-	void OpenFirst();
+	void ProcessFirst();
+
+public:
+	void ProcessLoop();
 
 public:
 	UPROPERTY(meta = (BindWidgetAnim), Transient)
