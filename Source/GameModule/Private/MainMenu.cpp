@@ -100,7 +100,7 @@ void UMainMenu::InitFirst()
 //	PlayMainMenuAniamtion(OpenFirstAnimation);
 //}
 
-bool ConstDelay = false;
+bool TestDelay = false;
 
 void UMainMenu::ProcessFirst()
 {
@@ -110,15 +110,15 @@ void UMainMenu::ProcessFirst()
 	GetWorld()->GetTimerManager().SetTimer(LoopTimerHandle, [this]() { this->ProcessLoop(); }, 0.03f, false);
 
 	FTimerHandle ConstDelayTimerHandle;
-	ConstDelay = false;
-	GetWorld()->GetTimerManager().SetTimer(ConstDelayTimerHandle, []() { ConstDelay = true; }, 2.0f, false);
+	TestDelay = false;
+	GetWorld()->GetTimerManager().SetTimer(ConstDelayTimerHandle, []() { TestDelay = true; }, 2.0f, false);
 }
 
 void UMainMenu::ProcessLoop()
 {
 	bool IsLoading = true;
 
-	if (ConstDelay)
+	if (TestDelay)
 	{
 		IsLoading = false;
 	}
