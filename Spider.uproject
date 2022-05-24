@@ -17,6 +17,14 @@
 				"UMG",
 				"Engine"
 			]
+		},
+		{
+			"Name": "SpiderModule",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine"
+			]
 		}
 	],
 	"Plugins": [
