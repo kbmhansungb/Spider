@@ -9,6 +9,10 @@ public class SpiderEditorTarget : TargetRules
 	{
 		Type = TargetType.Editor;
 		DefaultBuildSettings = BuildSettingsVersion.V2;
-		ExtraModuleNames.AddRange( new string[] { "Spider", "GameModule" } );
-	}
+		ExtraModuleNames.AddRange( new string[] { "Spider", "GameModule", "SpiderModule" } );
+
+		// Editor에서는 Non-Unity build를 사용하도록 하자.
+        bUseUnityBuild = false;
+        bUsePCHFiles = false;
+    }
 }

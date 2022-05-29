@@ -14,6 +14,8 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Animation/WidgetAnimation.h"
 
+#include "TimerManager.h"
+
 UMainMenuButton::UMainMenuButton(const FObjectInitializer& ObjectInitializer)
 	: UUserWidget(ObjectInitializer)
 	, Text(FText::FromString(FString("Text in here.")))

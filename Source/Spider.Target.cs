@@ -9,6 +9,6 @@ public class SpiderTarget : TargetRules
 	{
 		Type = TargetType.Game;
 		DefaultBuildSettings = BuildSettingsVersion.V2;
-		ExtraModuleNames.AddRange( new string[] { "Spider", "GameModule" } );
+		ExtraModuleNames.AddRange( new string[] { "Spider", "GameModule", "SpiderModule" } );
 	}
 }

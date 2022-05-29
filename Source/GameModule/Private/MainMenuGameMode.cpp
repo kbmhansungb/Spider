@@ -3,7 +3,7 @@
 #include "MainMenuGameMode.h"
 #include "MainMenuPlayerController.h"
 #include "GameModule/GameModule.h"
-
+#include "UObject/ConstructorHelpers.h"
 #include "MainMenu.h"
 
 AMainMenuGameMode::AMainMenuGameMode()

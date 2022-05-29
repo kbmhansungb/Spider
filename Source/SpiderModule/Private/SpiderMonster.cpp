@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "SpiderMonster.h"
 
 // Sets default values
@@ -9,6 +8,7 @@ ASpiderMonster::ASpiderMonster()
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	SkeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>(FName("SpiderSkeletalComponent"));
 }
 
 // Called when the game starts or when spawned

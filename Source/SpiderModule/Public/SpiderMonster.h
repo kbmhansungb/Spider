@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include "Animation/AnimInstance.h"
 #include "SpiderMonster.generated.h"
 
 UCLASS()
@@ -26,4 +27,14 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	USkeletalMeshComponent* SkeletalMesh;
+};
+
+UCLASS()
+class SPIDERMODULE_API USpiderAnimation : public UAnimInstance
+{
+	GENERATED_BODY()
+
+public:
 };
