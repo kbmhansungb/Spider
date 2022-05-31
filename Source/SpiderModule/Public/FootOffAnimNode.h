@@ -21,15 +21,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Links)
 	FComponentSpacePoseLink ComponentPose;
 
-	UPROPERTY(EditAnywhere, Category = CacheFoot, meta = (PinShownByDefault))
-	FName SocketName;
-
 	UPROPERTY(BlueprintReadWrite, Transient, Category = CacheFoot, meta = (PinShownByDefault))
 	TWeakObjectPtr<UFootOffDataObject> FootOfDataObject = nullptr;
 
 	virtual void Initialize_AnyThread(const FAnimationInitializeContext& Context) override;
 	virtual void CacheBones_AnyThread(const FAnimationCacheBonesContext& Context) override;
 	virtual void Update_AnyThread(const FAnimationUpdateContext& Context) override;
+
 	virtual void EvaluateComponentSpace_AnyThread(FComponentSpacePoseContext& Output) override;
 	virtual void GatherDebugData(FNodeDebugData& DebugData) override;
 };

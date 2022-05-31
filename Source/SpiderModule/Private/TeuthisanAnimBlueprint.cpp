@@ -3,21 +3,16 @@
 #include "TeuthisanAnimBlueprint.h"
 
 UTheuthisanAnimBlueprint::UTheuthisanAnimBlueprint()
-	: FootOfDataObject(nullptr)
 {
+	FootOfDataObject = NewObject<UFootOffDataObject>(GetOuter(), FName("FootOfDataObject"));
 }
 
-//void UTheuthisanAnimBlueprint::NativeInitializeAnimation()
-//{
-//	FootOfDataObject = NewObject<UFootOffDataObject>(this, FName("FootOfDataObject"));
-//}
+void UTheuthisanAnimBlueprint::NativeUpdateAnimation(float DeltaSeconds)
+{
+	FootOfDataObject->UpdateFootOffData(GetSkelMeshComponent());
+}
 
 UFootOffDataObject* UTheuthisanAnimBlueprint::GetFootOfDataObject_Implementation()
 {
-	if (!FootOfDataObject)
-	{
-		FootOfDataObject = NewObject<UFootOffDataObject>(this, FName("FootOfDataObject"));
-	}
-
 	return FootOfDataObject;
 }

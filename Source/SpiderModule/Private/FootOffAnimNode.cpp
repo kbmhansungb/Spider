@@ -31,29 +31,26 @@ void FCacheFootOfDataNode::EvaluateComponentSpace_AnyThread(FComponentSpacePoseC
 		return;
 	}
 
-	USkeletalMeshComponent* SkeletalMeshComponent = Output.AnimInstanceProxy->GetSkelMeshComponent();
-	//int32 BoneIndex = Output.AnimInstanceProxy->GetSkeleton()->GetReferenceSkeleton().FindBoneIndex(SocketName);
-	//FBoneReference BoneReference = Output.AnimInstanceProxy->GetRequiredBones();
-	//if (BoneIndex == INDEX_NONE)
-	//{
-	//	UE_LOG(LogTemp, Error, TEXT("Bone Index is not valid."));
-	//	return;
-	//}
-
-	// ComponentSpace
 	const FBoneContainer& BoneContainer = Output.Pose.GetPose().GetBoneContainer();
-	FTransform ComponentSpace = Output.Pose.GetComponentSpaceTransform(FCompactPoseBoneIndex(BoneContainer.GetPoseBoneIndexForBoneName(SocketName)));
-	//FTransform ComponentSpace = Output.Pose.GetLocalSpaceTransform(FCompactPoseBoneIndex(BoneIndex));
+	TMap<FName, FFootOfData>& FootOfDataMap = FootOfDataObject->FootOfDataMap;
+	for (auto& Pair : FootOfDataMap)
+	{
+		const FName& BoneName = Pair.Key;
+		FFootOfData& FootOffData = Pair.Value;
 
-	// ComponentSpace to Relative
-	FootOfDataObject->ComponentSpaceToRelativeTransform = FTransform(SkeletalMeshComponent->GetRelativeRotation(), SkeletalMeshComponent->GetRelativeLocation(), SkeletalMeshComponent->GetRelativeScale3D());
+		//if (FootOffData.NumOfEnteredFootOffStates)
+		{
+			FCompactPoseBoneIndex CompactPoseBoneIndex(BoneContainer.GetPoseBoneIndexForBoneName(BoneName));
+			if (CompactPoseBoneIndex.IsValid() == false)
+			{
+				UE_LOG(LogTemp, Error, TEXT("BoneName is not valid. So Cann`t find CompactPoseBoneIndex."));
+				break;
+			}
 
-	// ComponentSpace to World
-	//FootOfDataObject->ComponentSpaceToWorldTransform = FTransform(SkeletalMeshComponent->TransformFromBoneSpace())
-	
-	// Cache ComponentSpace
-	//FootOfDataObject->FootOfDataMap.FindOrAdd(SocketName).OriginalPosition = (FootOfDataObject->ComponentSpaceToRelativeTransform * ComponentSpace).GetLocation();
-	FootOfDataObject->FootOfDataMap.FindOrAdd(SocketName).OriginalPosition = (ComponentSpace * SkeletalMeshComponent->GetComponentToWorld()).GetLocation();
+			FTransform ComponentSpace = Output.Pose.GetComponentSpaceTransform(CompactPoseBoneIndex);
+			FootOffData.BonePosition_ComponentSpace = ComponentSpace.GetLocation();
+		}
+	}
 }
 
 void FCacheFootOfDataNode::GatherDebugData(FNodeDebugData& DebugData)

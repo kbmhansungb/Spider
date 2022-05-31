@@ -7,18 +7,19 @@
 #include "FootOffData.h"
 #include "Animation/AnimNotifies/AnimNotifyState.h"
 #include "Engine/EngineTypes.h"
+#include "Kismet/BlueprintFunctionLibrary.h"
 #include "FootOffAnimNotifyState.generated.h"
 
 /*
  *
  */
 UINTERFACE(MinimalAPI, Blueprintable)
-class UReactToFeetOffInterface : public UInterface
+class UFootOffInterface : public UInterface
 {
 	GENERATED_BODY()
 };
 
-class IReactToFeetOffInterface
+class IFootOffInterface
 {
 	GENERATED_BODY()
 
@@ -33,15 +34,18 @@ public:
 /*
  *
  */
-UCLASS(Abstract)
-class SPIDERMODULE_API UFootOffStateBase : public UAnimNotifyState
+UCLASS(MinimalAPI)
+class UFootOffFunctionLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 
 protected:
-	UFUNCTION(BlueprintCallable)
-	bool GetBoneHitResult(USkeletalMeshComponent* SkeletalMeshComponent, const FName& BoneName, FHitResult& HItResult, FVector& OriginalPosition);
+	UFUNCTION(BlueprintCallable, Category = Get)
+	static UFootOffDataObject* GetFootOfDataObjectFromSkeletalMeshComponent(USkeletalMeshComponent* SkeletalMeshComponent);
 
-	UFUNCTION(BlueprintCallable)
-	void UpdateBonePosition(USkeletalMeshComponent* SkeletalMeshComponent, const FName& BoneName);
+	//UFUNCTION(BlueprintCallable, Category = Edit)
+	//static void EnterAnimNotifyState(UFootOffDataObject* FootOffDataObject, const FName& BoneName);
+
+	//UFUNCTION(BlueprintCallable, Category = Edit)
+	//static void ExitAnimNotifyState(UFootOffDataObject* FootOffDataObject, const FName& BoneName);
 };

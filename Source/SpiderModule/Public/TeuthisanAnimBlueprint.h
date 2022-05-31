@@ -8,16 +8,18 @@
 #include "TeuthisanAnimBlueprint.generated.h"
 
 UCLASS()
-class SPIDERMODULE_API UTheuthisanAnimBlueprint : public UAnimInstance, public IReactToFeetOffInterface
+class SPIDERMODULE_API UTheuthisanAnimBlueprint : public UAnimInstance, public IFootOffInterface
 {
 	GENERATED_BODY()
 
 public:
 	UTheuthisanAnimBlueprint();
-	//virtual void NativeInitializeAnimation() override;
 
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
+
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Instanced)
 	UFootOffDataObject* FootOfDataObject;
 
 public:
