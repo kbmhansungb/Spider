@@ -278,12 +278,9 @@ void FLineTraceFromAxisNode::EvaluateComponentSpace_AnyThread(FComponentSpacePos
 		if (IsUpdatePosition)
 		{
 			FTransform Location = Transform_ComponentSpace * ComponentToWorld;
-			StartPosition = Location.GetLocation() - Axis * Info.StartOffset;
+			TraceResult.BonePosition_WorldSpace = Location.GetLocation();
 		}
-		else
-		{
-			StartPosition = TraceResult.HitResult.TraceStart - Axis * Info.StartOffset;
-		}
+		StartPosition = TraceResult.BonePosition_WorldSpace - Axis * Info.StartOffset;
 		EndPosition = StartPosition + Axis * Info.MaxLength;
 
 		FCollisionQueryParams Params;

@@ -64,6 +64,9 @@ struct SPIDERMODULE_API FFootOffTraceResult
 	GENERATED_BODY()
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector BonePosition_WorldSpace;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector FixedPosition_WorldSpace;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
