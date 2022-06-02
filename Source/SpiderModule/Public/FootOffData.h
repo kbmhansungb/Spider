@@ -10,7 +10,7 @@
  *
  */
 USTRUCT(BlueprintType)
-struct FFootOfData
+struct FFootOffData
 {
 	GENERATED_BODY()
 public:
@@ -55,14 +55,38 @@ public:
 	}
 };
 
+/*
+ *
+ */
+USTRUCT(BlueprintType)
+struct SPIDERMODULE_API FFootOffTraceResult
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector FixedPosition_WorldSpace;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool IsHit;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FHitResult HitResult;
+};
+
 UCLASS(BlueprintType, DefaultToInstanced, EditInlineNew)
 class SPIDERMODULE_API UFootOffDataObject final : public UObject
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TMap<FName, FFootOfData> FootOffDataMap;
+	///*
+	// * 
+	// */
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TMap<FName, FFootOffData> FootOffDataMap;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TMap<FName, FFootOffTraceResult> TraceResultMap;
 
 	UFUNCTION(BlueprintCallable)
 	void UpdateFootOffData(USkeletalMeshComponent* SkeletalMeshComponent);

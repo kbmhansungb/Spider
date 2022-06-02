@@ -16,9 +16,9 @@ void UFootOffDataObject::UpdateFootOffData(USkeletalMeshComponent* SkeletalMeshC
 	for (auto& Pair : FootOffDataMap)
 	{
 		const FName& Name = Pair.Key;
-		FFootOfData& FootOffData = Pair.Value;
+		FFootOffData& FootOffData = Pair.Value;
 
-		if (FootOffData.IsFootOff())
+		//if (FootOffData.IsFootOff())
 		{
 			FootOffData.BonePosition_WorldSpace = ComponentToWorld.TransformPosition(FootOffData.BonePosition_ComponentSpace);
 		}
@@ -56,7 +56,7 @@ void UFootOffDataObject::UpdateFootOffData(USkeletalMeshComponent* SkeletalMeshC
 
 void UFootOffDataObject::EnterFootOffState(const FName& BoneName)
 {
-	FFootOfData* FootOffDataPtr = FootOffDataMap.Find(BoneName);
+	FFootOffData* FootOffDataPtr = FootOffDataMap.Find(BoneName);
 	if (FootOffDataPtr)
 	{
 		FootOffDataPtr->NumOfEnteredFootOffStates += 1;
@@ -73,7 +73,7 @@ void UFootOffDataObject::EnterFootOffStates(const TArray<FName>& BoneNames)
 
 void UFootOffDataObject::ExitFootOffState(const FName& BoneName)
 {
-	FFootOfData* FootOffDataPtr = FootOffDataMap.Find(BoneName);
+	FFootOffData* FootOffDataPtr = FootOffDataMap.Find(BoneName);
 	if (FootOffDataPtr)
 	{
 		FootOffDataPtr->NumOfEnteredFootOffStates -= 1;
@@ -90,7 +90,7 @@ void UFootOffDataObject::ExitFootOffStates(const TArray<FName>& BoneNames)
 
 void UFootOffDataObject::UpdateFootOffDataFromNotifyState(const FName& BoneName, bool IsUpdateMaxFootOffHeight)
 {
-	FFootOfData& FootOfData = FootOffDataMap.FindOrAdd(BoneName);
+	FFootOffData& FootOfData = FootOffDataMap.FindOrAdd(BoneName);
 	
 	// Todo
 	//if (IsUpdateMaxFootOffHeight)

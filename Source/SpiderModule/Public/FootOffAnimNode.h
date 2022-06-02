@@ -13,7 +13,7 @@
  *
  */
 USTRUCT(BlueprintInternalUseOnly)
-struct SPIDERMODULE_API FCacheFootOfDataNode : public FAnimNode_Base
+struct SPIDERMODULE_API FCacheFootOffDataNode : public FAnimNode_Base
 {
 	GENERATED_BODY()
 
@@ -21,7 +21,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Links)
 	FComponentSpacePoseLink ComponentPose;
 
-	UPROPERTY(BlueprintReadWrite, Transient, Category = CacheFoot, meta = (PinShownByDefault))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Transient, Category = CacheFootOff, meta = (PinShownByDefault))
 	TWeakObjectPtr<UFootOffDataObject> FootOfDataObject = nullptr;
 
 	virtual void Initialize_AnyThread(const FAnimationInitializeContext& Context) override;
@@ -39,7 +39,169 @@ class UCacheFootOfDataGraphNode : public UAnimGraphNode_Base
 
 public:
 	UPROPERTY(EditAnywhere)
-	FCacheFootOfDataNode Node;
+	FCacheFootOffDataNode Node;
+
+	virtual void CreateOutputPins() override;
+};
+
+/*
+ *
+ */
+USTRUCT(BlueprintInternalUseOnly)
+struct SPIDERMODULE_API FCacheBoneTransformFromReferenceNode : public FAnimNode_Base
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Links)
+	FComponentSpacePoseLink ComponentPose;
+
+	UPROPERTY(EditAnywhere)
+	TArray<FBoneReference> TargetBoneArray;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Transient, Category = CacheFootOff, meta = (PinShownByDefault))
+	TWeakObjectPtr<UFootOffDataObject> FootOfDataObject = nullptr;
+
+	virtual void Initialize_AnyThread(const FAnimationInitializeContext& Context) override;
+	virtual void CacheBones_AnyThread(const FAnimationCacheBonesContext& Context) override;
+	virtual void Update_AnyThread(const FAnimationUpdateContext& Context) override;
+
+	virtual void EvaluateComponentSpace_AnyThread(FComponentSpacePoseContext& Output) override;
+	virtual void GatherDebugData(FNodeDebugData& DebugData) override;
+};
+
+UCLASS(MinimalAPI)
+class UCacheBoneTransformFromReferenceGraphNode : public UAnimGraphNode_Base
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere)
+	FCacheBoneTransformFromReferenceNode Node;
+
+	virtual void CreateOutputPins() override;
+};
+
+USTRUCT(BlueprintType)
+struct SPIDERMODULE_API FLineTraceFromBoneInfo
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FName TracedName;
+
+	UPROPERTY(EditAnywhere)
+	FBoneReference FromBone;
+
+	UPROPERTY(EditAnywhere)
+	FBoneReference ToBone;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float MaxLength;
+};
+
+/*
+ *
+ */
+USTRUCT(BlueprintInternalUseOnly)
+struct SPIDERMODULE_API FLineTraceFromBoneNode : public FAnimNode_Base
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Links)
+	FComponentSpacePoseLink ComponentPose;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Transient, Category = CacheFootOff, meta = (PinShownByDefault))
+	TWeakObjectPtr<UFootOffDataObject> FootOfDataObject = nullptr;
+
+	UPROPERTY(EditAnywhere)
+	TArray<FLineTraceFromBoneInfo> LineTraceFromBoneInfoArray;
+
+	virtual void Initialize_AnyThread(const FAnimationInitializeContext& Context) override;
+	virtual void CacheBones_AnyThread(const FAnimationCacheBonesContext& Context) override;
+	virtual void Update_AnyThread(const FAnimationUpdateContext& Context) override;
+
+	virtual void EvaluateComponentSpace_AnyThread(FComponentSpacePoseContext& Output) override;
+	virtual void GatherDebugData(FNodeDebugData& DebugData) override;
+};
+
+UCLASS(MinimalAPI)
+class ULineTraceFromBoneGraphNode : public UAnimGraphNode_Base
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere)
+	FLineTraceFromBoneNode Node;
+
+	virtual void CreateOutputPins() override;
+};
+
+
+USTRUCT(BlueprintType)
+struct SPIDERMODULE_API FLineTraceFromAxisInfo
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FName TracedName;
+
+	UPROPERTY(EditAnywhere)
+	FBoneReference TargetBone;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float MaxLength;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float StartOffset;
+};
+
+/*
+ *
+ */
+USTRUCT(BlueprintInternalUseOnly)
+struct SPIDERMODULE_API FLineTraceFromAxisNode : public FAnimNode_Base
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Links, meta = (AlwaysAsPin))
+	FComponentSpacePoseLink ComponentPose;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Transient, Category = CacheFootOff, meta = (PinShownByDefault))
+	TWeakObjectPtr<UFootOffDataObject> FootOfDataObject = nullptr;
+
+	UPROPERTY(EditAnywhere)
+	TArray<FLineTraceFromAxisInfo> LineTraceFromBoneInfoArray;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (PinShownByDefault))
+	FVector Axis;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (PinShownByDefault))
+	float OffsetMultifly = 1.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (PinShownByDefault))
+	bool IsUpdatePosition = true;
+
+	virtual void Initialize_AnyThread(const FAnimationInitializeContext& Context) override;
+	virtual void CacheBones_AnyThread(const FAnimationCacheBonesContext& Context) override;
+	virtual void Update_AnyThread(const FAnimationUpdateContext& Context) override;
+
+	virtual void EvaluateComponentSpace_AnyThread(FComponentSpacePoseContext& Output) override;
+	virtual void GatherDebugData(FNodeDebugData& DebugData) override;
+};
+
+UCLASS(MinimalAPI)
+class ULineTraceFromAxisGraphNode : public UAnimGraphNode_Base
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere)
+	FLineTraceFromAxisNode Node;
 
 	virtual void CreateOutputPins() override;
 };
