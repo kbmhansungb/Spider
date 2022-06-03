@@ -186,6 +186,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (PinShownByDefault))
 	bool IsUpdatePosition = true;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (PinShownByDefault))
+	bool IsReturnEndPositionWhenNotHit = false;
+
 	virtual void Initialize_AnyThread(const FAnimationInitializeContext& Context) override;
 	virtual void CacheBones_AnyThread(const FAnimationCacheBonesContext& Context) override;
 	virtual void Update_AnyThread(const FAnimationUpdateContext& Context) override;

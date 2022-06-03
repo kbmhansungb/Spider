@@ -198,13 +198,13 @@ void FLineTraceFromBoneNode::EvaluateComponentSpace_AnyThread(FComponentSpacePos
 			TraceResult.FixedPosition_WorldSpace = TraceResult.IsHit ? TraceResult.HitResult.Location : EndPosition;
 
 
-#ifdef WITH_EDITOR 
+#ifdef UE_ENABLE_DEBUG_DRAWING 
 
 			// Debug draw
 			const FColor& Color = TraceResult.IsHit ? FColor::Green : FColor::Red;
 			DrawDebugDirectionalArrow(SkeletalMeshComponent->GetWorld(), StartPosition, TraceResult.FixedPosition_WorldSpace, 5.0f, Color);
 
-#endif // WITH_EDITOR 
+#endif // UE_ENABLE_DEBUG_DRAWING 
 		}
 	}
 }
@@ -288,21 +288,24 @@ void FLineTraceFromAxisNode::EvaluateComponentSpace_AnyThread(FComponentSpacePos
 		TraceResult.IsHit = SkeletalMeshComponent->GetWorld()->LineTraceSingleByChannel(
 			TraceResult.HitResult, StartPosition, EndPosition, ECollisionChannel::ECC_WorldStatic, Params);
 
-		TraceResult.FixedPosition_WorldSpace = TraceResult.IsHit ? TraceResult.HitResult.Location : EndPosition;
 		if (TraceResult.IsHit)
 		{
 			FVector Offset = UKismetMathLibrary::ProjectVectorOnToVector(Transform_ComponentSpace.GetLocation(), Axis);
-			TraceResult.FixedPosition_WorldSpace += Offset * OffsetMultifly;
+			TraceResult.FixedPosition_WorldSpace = TraceResult.HitResult.Location + Offset * OffsetMultifly;
+		}
+		else
+		{
+			TraceResult.FixedPosition_WorldSpace = IsReturnEndPositionWhenNotHit ? EndPosition : TraceResult.BonePosition_WorldSpace;
 		}
 
 		// Todo : Debug Draw line을 AnimInstance의 Update로 옮겨야함.
-//#ifdef WITH_EDITOR 
-//
-//		// Debug draw
-//		const FColor& Color = TraceResult.IsHit ? FColor::Green : FColor::Red;
-//		DrawDebugDirectionalArrow(SkeletalMeshComponent->GetWorld(), StartPosition, TraceResult.FixedPosition_WorldSpace, 5.0f, Color);
-//
-//#endif // WITH_EDITOR 
+#ifdef UE_ENABLE_DEBUG_DRAWING 
+
+		// Draw trace line
+		const FColor& Color = TraceResult.IsHit ? FColor::Green : FColor::Red;
+		DrawDebugDirectionalArrow(SkeletalMeshComponent->GetWorld(), StartPosition, TraceResult.IsHit ? TraceResult.HitResult.Location : EndPosition, 5.0f, Color);
+
+#endif // UE_ENABLE_DEBUG_DRAWING 
 	}
 }
 
