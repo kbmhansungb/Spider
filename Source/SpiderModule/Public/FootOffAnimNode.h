@@ -157,6 +157,11 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float StartOffset;
+
+	FORCEINLINE void InitializeBoneReference(const FBoneContainer& RequiredBones)
+	{
+		TargetBone.Initialize(RequiredBones);
+	}
 };
 
 /*
@@ -171,22 +176,22 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Links, meta = (AlwaysAsPin))
 	FComponentSpacePoseLink ComponentPose;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Transient, Category = CacheFootOff, meta = (PinShownByDefault))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Transient, Category = Links, meta = (PinShownByDefault))
 	TWeakObjectPtr<UFootOffDataObject> FootOfDataObject = nullptr;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = TraceInfo)
 	TArray<FLineTraceFromAxisInfo> LineTraceFromBoneInfoArray;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (PinShownByDefault))
-	FVector Axis;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = TraceInfo, meta = (PinShownByDefault))
+	FVector Direction;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (PinShownByDefault))
-	float OffsetMultifly = 1.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (PinShownByDefault))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BonePositionOption, meta = (PinShownByDefault))
 	bool IsUpdatePosition = true;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (PinShownByDefault))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FixedPositionOption, meta = (PinShownByDefault))
+	float OffsetMultifly = 1.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FixedPositionOption, meta = (PinShownByDefault))
 	bool IsReturnEndPositionWhenNotHit = false;
 
 	virtual void Initialize_AnyThread(const FAnimationInitializeContext& Context) override;

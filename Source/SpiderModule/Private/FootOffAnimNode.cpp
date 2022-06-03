@@ -229,11 +229,11 @@ void FLineTraceFromAxisNode::Initialize_AnyThread(const FAnimationInitializeCont
 {
 	ComponentPose.Initialize(Context);
 
-	FBoneContainer& RequiredBones = Context.AnimInstanceProxy->GetRequiredBones();
-
+	const FBoneContainer& RequiredBones = Context.AnimInstanceProxy->GetRequiredBones();
+	
 	for (auto& LineTraceFromBoneInfo : LineTraceFromBoneInfoArray)
 	{
-		LineTraceFromBoneInfo.TargetBone.Initialize(RequiredBones);
+		LineTraceFromBoneInfo.InitializeBoneReference(RequiredBones);
 	}
 }
 
@@ -280,8 +280,8 @@ void FLineTraceFromAxisNode::EvaluateComponentSpace_AnyThread(FComponentSpacePos
 			FTransform Location = Transform_ComponentSpace * ComponentToWorld;
 			TraceResult.BonePosition_WorldSpace = Location.GetLocation();
 		}
-		StartPosition = TraceResult.BonePosition_WorldSpace - Axis * Info.StartOffset;
-		EndPosition = StartPosition + Axis * Info.MaxLength;
+		StartPosition = TraceResult.BonePosition_WorldSpace - Direction * Info.StartOffset;
+		EndPosition = StartPosition + Direction * Info.MaxLength;
 
 		FCollisionQueryParams Params;
 		Params.AddIgnoredActor(SkeletalMeshComponent->GetOwner());
@@ -290,7 +290,7 @@ void FLineTraceFromAxisNode::EvaluateComponentSpace_AnyThread(FComponentSpacePos
 
 		if (TraceResult.IsHit)
 		{
-			FVector Offset = UKismetMathLibrary::ProjectVectorOnToVector(Transform_ComponentSpace.GetLocation(), Axis);
+			FVector Offset = UKismetMathLibrary::ProjectVectorOnToVector(Transform_ComponentSpace.GetLocation(), Direction);
 			TraceResult.FixedPosition_WorldSpace = TraceResult.HitResult.Location + Offset * OffsetMultifly;
 		}
 		else
