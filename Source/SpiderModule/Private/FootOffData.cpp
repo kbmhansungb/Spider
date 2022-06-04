@@ -17,11 +17,7 @@ bool UFootOffDataObject::IsFootOffState(const FName& StateName) const
 
 void UFootOffDataObject::EnterFootOffState(const FName& StateName)
 {
-	FFootOffData* FootOffDataPtr = FootOffDataMap.Find(StateName);
-	if (FootOffDataPtr)
-	{
-		FootOffDataPtr->NumOfEnteredFootOffStates += 1;
-	}
+	FootOffDataMap.FindOrAdd(StateName).NumOfEnteredFootOffStates += 1;
 }
 
 void UFootOffDataObject::EnterFootOffStates(const TArray<FName>& StateNames)
@@ -34,11 +30,7 @@ void UFootOffDataObject::EnterFootOffStates(const TArray<FName>& StateNames)
 
 void UFootOffDataObject::ExitFootOffState(const FName& StateName)
 {
-	FFootOffData* FootOffDataPtr = FootOffDataMap.Find(StateName);
-	if (FootOffDataPtr)
-	{
-		FootOffDataPtr->NumOfEnteredFootOffStates -= 1;
-	}
+	FootOffDataMap.FindOrAdd(StateName).NumOfEnteredFootOffStates -= 1;
 }
 
 void UFootOffDataObject::ExitFootOffStates(const TArray<FName>& StateNames)

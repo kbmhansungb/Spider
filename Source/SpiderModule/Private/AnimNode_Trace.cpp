@@ -9,18 +9,17 @@
 void FTrace_AnimNode::Initialize_AnyThread(const FAnimationInitializeContext& Context)
 {
 	ComponentPose.Initialize(Context);
-
-	const FBoneContainer& RequiredBones = Context.AnimInstanceProxy->GetRequiredBones();
-	
-	for (auto& LineTraceFromBoneInfo : LineTraceFromBoneInfoArray)
-	{
-		LineTraceFromBoneInfo.InitializeBoneReference(RequiredBones);
-	}
 }
 
 void FTrace_AnimNode::CacheBones_AnyThread(const FAnimationCacheBonesContext& Context)
 {
 	ComponentPose.CacheBones(Context);
+
+	const FBoneContainer& RequiredBones = Context.AnimInstanceProxy->GetRequiredBones();
+	for (auto& LineTraceFromBoneInfo : LineTraceFromBoneInfoArray)
+	{
+		LineTraceFromBoneInfo.InitializeBoneReference(RequiredBones);
+	}
 }
 
 void FTrace_AnimNode::Update_AnyThread(const FAnimationUpdateContext& Context)

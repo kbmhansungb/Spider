@@ -33,7 +33,7 @@ public:
 	TMap<FName, FFootOffData> FootOffDataMap;
 
 public: 
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintPure, meta = (BlueprintThreadSafe))
 	bool IsFootOffState(const FName& StateName) const;
 
 public:
