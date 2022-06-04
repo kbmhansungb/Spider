@@ -68,7 +68,7 @@ void FTrace_AnimNode::EvaluateComponentSpace_AnyThread(FComponentSpacePoseContex
 		Params.AddIgnoredActor(SkeletalMeshComponent->GetOwner());
 		TraceResult.IsHit = SkeletalMeshComponent->GetWorld()->LineTraceSingleByChannel(
 			TraceResult.HitResult, StartPosition, EndPosition, ECollisionChannel::ECC_WorldStatic, Params);
-
+		
 		// Update FixedPosition
 		FVector NewFixedPosition;
 		if (TraceResult.IsHit)

@@ -34,7 +34,7 @@ public:
 
 public: 
 	UFUNCTION(BlueprintPure, meta = (BlueprintThreadSafe))
-	bool IsFootOffState(const FName& StateName) const;
+	bool IsFootOffState(const FName& StateName);
 
 public:
 	UFUNCTION(BlueprintCallable)

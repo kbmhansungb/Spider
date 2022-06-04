@@ -3,7 +3,7 @@
 #include "FootOffData.h"
 #include "Animation/AnimInstance.h"
 
-bool UFootOffDataObject::IsFootOffState(const FName& StateName) const
+bool UFootOffDataObject::IsFootOffState(const FName& StateName)
 {
 	const FFootOffData* FootOffDataPtr = FootOffDataMap.Find(StateName);
 
