@@ -55,7 +55,7 @@ void FTrace_AnimNode::EvaluateComponentSpace_AnyThread(FComponentSpacePoseContex
 
 		// Update BonePosition
 		const FTransform& Transform_ComponentSpace = Output.Pose.GetComponentSpaceTransform(Info.TargetBone.GetCompactPoseIndex(RequiredBones));
-		if (IsUpdatePosition)
+		if (IsUpdatePosition /*|| IsBecomeRelevant()*/)
 		{
 			FTransform Location = Transform_ComponentSpace * ComponentToWorld;
 			TraceResult.BonePosition_WorldSpace = Location.GetLocation();
@@ -81,19 +81,21 @@ void FTrace_AnimNode::EvaluateComponentSpace_AnyThread(FComponentSpacePoseContex
 			NewFixedPosition = IsReturnEndPositionWhenNotHit ? EndPosition : TraceResult.BonePosition_WorldSpace;
 		}
 
-		TraceResult.FixedPosition_WorldSpace = 
-			UseFixedPositionInterp 
-			? InterpolatePositionWithAxis(Direction, TraceResult.FixedPosition_WorldSpace, NewFixedPosition, MaxInterpolateLength, Output.AnimInstanceProxy->GetDeltaSeconds())
-			: NewFixedPosition;
-
-//#ifdef UE_ENABLE_DEBUG_DRAWING 
-//
-//		// Draw trace line
-//		const FColor& Color = TraceResult.IsHit ? FColor::Green : FColor::Red;
-//		DrawDebugLine(SkeletalMeshComponent->GetWorld(), StartPosition, TraceResult.IsHit ? TraceResult.HitResult.Location : EndPosition, Color);
-//
-//#endif // UE_ENABLE_DEBUG_DRAWING 
+		//if (IsBecomeRelevant() == false)
+		//{
+			TraceResult.FixedPosition_WorldSpace =
+				UseFixedPositionInterp
+				? InterpolatePositionWithAxis(Direction, TraceResult.FixedPosition_WorldSpace, NewFixedPosition, MaxInterpolateLength)
+				: NewFixedPosition;
+		//}
+		//else
+		//{
+		//	TraceResult.FixedPosition_WorldSpace = NewFixedPosition;
+		//}
 	}
+
+	// Wrap-up
+	UpdateLastUpdatedFrameCounter();
 }
 
 void FTrace_AnimNode::GatherDebugData(FNodeDebugData& DebugData)
@@ -104,12 +106,12 @@ void FTrace_AnimNode::GatherDebugData(FNodeDebugData& DebugData)
 	ComponentPose.GatherDebugData(DebugData);
 }
 
-FVector FTrace_AnimNode::InterpolatePositionWithAxis(const FVector& Axis, const FVector& BeforePosition, const FVector& NewPosition, float MaxLength, float DeltaSeconds)
+FVector FTrace_AnimNode::InterpolatePositionWithAxis(const FVector& Axis, const FVector& BeforePosition, const FVector& NewPosition, float MaxLength) const
 {
 	FVector ToVector = NewPosition - BeforePosition;
 	FVector ProjectToAxis = ToVector.ProjectOnTo(Axis);
 	FVector ResultPosition;
-
+	
 	float VectorLength = ProjectToAxis.Length();
 	if (ProjectToAxis.Normalize())
 	{
@@ -117,11 +119,11 @@ FVector FTrace_AnimNode::InterpolatePositionWithAxis(const FVector& Axis, const 
 
 		if (MaxLength > VectorLength)
 		{
-			ResultPosition += ProjectToAxis * (VectorLength * DeltaSeconds);
+			ResultPosition += ProjectToAxis * VectorLength;
 		}
 		else
 		{
-			ResultPosition += ProjectToAxis * (MaxLength * DeltaSeconds);
+			ResultPosition += ProjectToAxis * MaxLength;
 		}
 	}
 	else
@@ -131,6 +133,16 @@ FVector FTrace_AnimNode::InterpolatePositionWithAxis(const FVector& Axis, const 
 
 	return ResultPosition;
 }
+
+//bool FTrace_AnimNode::IsBecomeRelevant() const
+//{
+//	return !((LastUpdatedFrameCounter == GFrameCounter + 1) || (LastUpdatedFrameCounter == GFrameCounter));
+//}
+//
+//void FTrace_AnimNode::UpdateLastUpdatedFrameCounter()
+//{
+//	LastUpdatedFrameCounter = GFrameCounter;
+//}
 
 void UTrace_AnimGraphNode::CreateOutputPins()
 {

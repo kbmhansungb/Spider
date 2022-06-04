@@ -111,6 +111,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FixedPositionOption, meta = (PinShownByDefault))
 	float MaxInterpolateLength = 10.0f;
 
+protected:
 	virtual void Initialize_AnyThread(const FAnimationInitializeContext& Context) override;
 	virtual void CacheBones_AnyThread(const FAnimationCacheBonesContext& Context) override;
 	virtual void Update_AnyThread(const FAnimationUpdateContext& Context) override;
@@ -119,7 +120,11 @@ public:
 	virtual void GatherDebugData(FNodeDebugData& DebugData) override;
 	
 protected:
-	FVector InterpolatePositionWithAxis(const FVector& Axis, const FVector& BeforePosition, const FVector& NewPosition, float MaxLength, float DeltaSeconds);
+	FVector InterpolatePositionWithAxis(const FVector& Axis, const FVector& BeforePosition, const FVector& NewPosition, float MaxLength) const;
+
+	//uint64 LastUpdatedFrameCounter = MAX_uint32;
+	//bool IsBecomeRelevant() const;
+	//void UpdateLastUpdatedFrameCounter();
 };
 
 UCLASS(MinimalAPI)
