@@ -109,7 +109,10 @@ public:
 	bool UseFixedPositionInterp = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FixedPositionOption, meta = (PinShownByDefault))
-	float MaxInterpolateLength = 10.0f;
+	float MaxAxisInterpolateLength = 10.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FixedPositionOption, meta = (PinShownByDefault))
+	float MaxPlaneInterpolateLength = 10.0f;
 
 protected:
 	virtual void Initialize_AnyThread(const FAnimationInitializeContext& Context) override;
@@ -120,7 +123,7 @@ protected:
 	virtual void GatherDebugData(FNodeDebugData& DebugData) override;
 	
 protected:
-	FVector InterpolatePositionWithAxis(const FVector& Axis, const FVector& BeforePosition, const FVector& NewPosition, float MaxLength) const;
+	FVector InterpolatePositionWithAxis(const FVector& BeforePosition, const FVector& NewPosition) const;
 
 	//uint64 LastUpdatedFrameCounter = MAX_uint32;
 	//bool IsBecomeRelevant() const;

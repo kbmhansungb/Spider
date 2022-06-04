@@ -85,7 +85,7 @@ void FTrace_AnimNode::EvaluateComponentSpace_AnyThread(FComponentSpacePoseContex
 		//{
 			TraceResult.FixedPosition_WorldSpace =
 				UseFixedPositionInterp
-				? InterpolatePositionWithAxis(Direction, TraceResult.FixedPosition_WorldSpace, NewFixedPosition, MaxInterpolateLength)
+				? InterpolatePositionWithAxis(TraceResult.FixedPosition_WorldSpace, NewFixedPosition)
 				: NewFixedPosition;
 		//}
 		//else
@@ -94,8 +94,8 @@ void FTrace_AnimNode::EvaluateComponentSpace_AnyThread(FComponentSpacePoseContex
 		//}
 	}
 
-	// Wrap-up
-	UpdateLastUpdatedFrameCounter();
+	//// Wrap-up
+	//UpdateLastUpdatedFrameCounter();
 }
 
 void FTrace_AnimNode::GatherDebugData(FNodeDebugData& DebugData)
@@ -106,29 +106,45 @@ void FTrace_AnimNode::GatherDebugData(FNodeDebugData& DebugData)
 	ComponentPose.GatherDebugData(DebugData);
 }
 
-FVector FTrace_AnimNode::InterpolatePositionWithAxis(const FVector& Axis, const FVector& BeforePosition, const FVector& NewPosition, float MaxLength) const
+FVector FTrace_AnimNode::InterpolatePositionWithAxis(const FVector& BeforePosition, const FVector& NewPosition) const
 {
 	FVector ToVector = NewPosition - BeforePosition;
-	FVector ProjectToAxis = ToVector.ProjectOnTo(Axis);
-	FVector ResultPosition;
-	
-	float VectorLength = ProjectToAxis.Length();
-	if (ProjectToAxis.Normalize())
-	{
-		ResultPosition = BeforePosition + ToVector - ProjectToAxis * VectorLength;
+	FVector ProjectToAxis = ToVector.ProjectOnTo(Direction);
+	FVector ProjectToPlane = ToVector - ProjectToAxis;
+	FVector ResultPosition = BeforePosition;
 
-		if (MaxLength > VectorLength)
+	float PlaneVectorLength = ProjectToPlane.Length();
+	if (ProjectToPlane.Normalize())
+	{
+		if (MaxPlaneInterpolateLength > PlaneVectorLength)
 		{
-			ResultPosition += ProjectToAxis * VectorLength;
+			ResultPosition += ProjectToPlane * PlaneVectorLength;
 		}
 		else
 		{
-			ResultPosition += ProjectToAxis * MaxLength;
+			ResultPosition += ProjectToPlane * MaxPlaneInterpolateLength;
 		}
 	}
 	else
 	{
-		ResultPosition = NewPosition;
+		ResultPosition += ProjectToPlane;
+	}
+
+	float AxisVectorLength = ProjectToAxis.Length();
+	if (ProjectToAxis.Normalize())
+	{
+		if (MaxAxisInterpolateLength > AxisVectorLength)
+		{
+			ResultPosition += ProjectToAxis * AxisVectorLength;
+		}
+		else
+		{
+			ResultPosition += ProjectToAxis * MaxAxisInterpolateLength;
+		}
+	}
+	else
+	{
+		ResultPosition += ProjectToAxis;
 	}
 
 	return ResultPosition;
