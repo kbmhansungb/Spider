@@ -7,11 +7,6 @@ UTheuthisanAnimBlueprint::UTheuthisanAnimBlueprint()
 	FootOfDataObject = NewObject<UFootOffDataObject>(GetOuter(), FName("FootOfDataObject"));
 }
 
-void UTheuthisanAnimBlueprint::NativeUpdateAnimation(float DeltaSeconds)
-{
-	FootOfDataObject->UpdateFootOffData(GetSkelMeshComponent());
-}
-
 UFootOffDataObject* UTheuthisanAnimBlueprint::GetFootOfDataObject_Implementation()
 {
 	return FootOfDataObject;

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
+#include "AnimNode_Trace.h"
 #include "FootOffAnimNotifyState.h"
 #include "TeuthisanAnimBlueprint.generated.h"
 
@@ -14,9 +15,6 @@ class SPIDERMODULE_API UTheuthisanAnimBlueprint : public UAnimInstance, public I
 
 public:
 	UTheuthisanAnimBlueprint();
-
-protected:
-	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Instanced)
