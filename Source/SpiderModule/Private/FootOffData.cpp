@@ -3,98 +3,48 @@
 #include "FootOffData.h"
 #include "Animation/AnimInstance.h"
 
-void UFootOffDataObject::UpdateFootOffData(USkeletalMeshComponent* SkeletalMeshComponent)
+bool UFootOffDataObject::IsFootOffState(const FName& StateName) const
 {
-	if (IsValid(SkeletalMeshComponent) == false)
+	const FFootOffData* FootOffDataPtr = FootOffDataMap.Find(StateName);
+
+	if (!FootOffDataPtr)
 	{
-		UE_LOG(LogTemp, Error, TEXT("SkeletalMeshComponent is not valid."));
-		return;
+		return false;
 	}
 
-	const FTransform& ComponentToWorld = SkeletalMeshComponent->GetComponentToWorld();
-
-	for (auto& Pair : FootOffDataMap)
-	{
-		const FName& Name = Pair.Key;
-		FFootOffData& FootOffData = Pair.Value;
-
-		//if (FootOffData.IsFootOff())
-		{
-			FootOffData.BonePosition_WorldSpace = ComponentToWorld.TransformPosition(FootOffData.BonePosition_ComponentSpace);
-		}
-
-		// Start trace
-		FVector Start = FootOffData.BonePosition_WorldSpace;
-		Start.Z += 30.0f;
-		FVector End = FVector(Start.X, Start.Y, Start.Z - 160.0f);
-
-		FCollisionQueryParams Params;
-		Params.AddIgnoredActor(SkeletalMeshComponent->GetOwner());
-		FootOffData.IsHit = SkeletalMeshComponent->GetWorld()->LineTraceSingleByChannel(
-			FootOffData.HitResult, Start, End, ECollisionChannel::ECC_WorldStatic, Params);
-
-		// Set Traced Position
-		FootOffData.TracedPosition_WorldSpace = FootOffData.IsHit ? FootOffData.HitResult.Location : FootOffData.BonePosition_WorldSpace;
-
-		// Set Fixed Position
-		FootOffData.FixedPosition_WorldSpace = FootOffData.TracedPosition_WorldSpace;
-		if (FootOffData.BonePosition_ComponentSpace.Z > 0.0f)
-		{
-			FootOffData.FixedPosition_WorldSpace.Z += FootOffData.BonePosition_ComponentSpace.Z;
-		}
-
-#ifdef WITH_EDITOR 
-
-		// Debug draw
-		const FColor& Color = FootOffData.IsHit ? FColor::Green : FColor::Red;
-		DrawDebugSphere(SkeletalMeshComponent->GetWorld(), Start, 1.0f, 16, Color);
-		DrawDebugDirectionalArrow(SkeletalMeshComponent->GetWorld(), Start, FootOffData.TracedPosition_WorldSpace, 5.0f, Color);
-
-#endif // WITH_EDITOR 
-	}
+	return FootOffDataPtr->IsFootOff();
 }
 
-void UFootOffDataObject::EnterFootOffState(const FName& BoneName)
+void UFootOffDataObject::EnterFootOffState(const FName& StateName)
 {
-	FFootOffData* FootOffDataPtr = FootOffDataMap.Find(BoneName);
+	FFootOffData* FootOffDataPtr = FootOffDataMap.Find(StateName);
 	if (FootOffDataPtr)
 	{
 		FootOffDataPtr->NumOfEnteredFootOffStates += 1;
 	}
 }
 
-void UFootOffDataObject::EnterFootOffStates(const TArray<FName>& BoneNames)
+void UFootOffDataObject::EnterFootOffStates(const TArray<FName>& StateNames)
 {
-	for (const auto& BoneName : BoneNames)
+	for (const auto& StateName : StateNames)
 	{
-		EnterFootOffState(BoneName);
+		EnterFootOffState(StateName);
 	}
 }
 
-void UFootOffDataObject::ExitFootOffState(const FName& BoneName)
+void UFootOffDataObject::ExitFootOffState(const FName& StateName)
 {
-	FFootOffData* FootOffDataPtr = FootOffDataMap.Find(BoneName);
+	FFootOffData* FootOffDataPtr = FootOffDataMap.Find(StateName);
 	if (FootOffDataPtr)
 	{
 		FootOffDataPtr->NumOfEnteredFootOffStates -= 1;
 	}
 }
 
-void UFootOffDataObject::ExitFootOffStates(const TArray<FName>& BoneNames)
+void UFootOffDataObject::ExitFootOffStates(const TArray<FName>& StateNames)
 {
-	for (const auto& BoneName : BoneNames)
+	for (const auto& StateName : StateNames)
 	{
-		ExitFootOffState(BoneName);
+		ExitFootOffState(StateName);
 	}
-}
-
-void UFootOffDataObject::UpdateFootOffDataFromNotifyState(const FName& BoneName, bool IsUpdateMaxFootOffHeight)
-{
-	FFootOffData& FootOfData = FootOffDataMap.FindOrAdd(BoneName);
-	
-	// Todo
-	//if (IsUpdateMaxFootOffHeight)
-	//{
-	//	FootOfData.MaxFootOffHeight = FMath::Max(FootOfData.MaxFootOffHeight, FootOfData.BonePosition_ComponentSpace.Z);
-	//}
 }
