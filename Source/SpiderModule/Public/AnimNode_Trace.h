@@ -119,7 +119,7 @@ public:
 	virtual void GatherDebugData(FNodeDebugData& DebugData) override;
 	
 protected:
-	FVector InterpolatePositionWithAxis(const FVector& Axis, const FVector& BeforePosition, const FVector& NewPosition, float MaxLength);
+	FVector InterpolatePositionWithAxis(const FVector& Axis, const FVector& BeforePosition, const FVector& NewPosition, float MaxLength, float DeltaSeconds);
 };
 
 UCLASS(MinimalAPI)

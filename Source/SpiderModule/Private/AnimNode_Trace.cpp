@@ -31,7 +31,7 @@ void FTrace_AnimNode::Update_AnyThread(const FAnimationUpdateContext& Context)
 void FTrace_AnimNode::EvaluateComponentSpace_AnyThread(FComponentSpacePoseContext& Output)
 {
 	ComponentPose.EvaluateComponentSpace(Output);
-
+	
 	if (!TracedDataObject.IsValid())
 	{
 		UE_LOG(LogTemp, Error, TEXT("FootOfDataObject is not valid."));
@@ -41,7 +41,6 @@ void FTrace_AnimNode::EvaluateComponentSpace_AnyThread(FComponentSpacePoseContex
 	const FBoneContainer& RequiredBones = Output.AnimInstanceProxy->GetRequiredBones();
 	const USkeletalMeshComponent* SkeletalMeshComponent = Output.AnimInstanceProxy->GetSkelMeshComponent();
 	const FTransform& ComponentToWorld = SkeletalMeshComponent->GetComponentToWorld();
-	
 	
 	for (auto& Info : LineTraceFromBoneInfoArray)
 	{
@@ -84,7 +83,7 @@ void FTrace_AnimNode::EvaluateComponentSpace_AnyThread(FComponentSpacePoseContex
 
 		TraceResult.FixedPosition_WorldSpace = 
 			UseFixedPositionInterp 
-			? InterpolatePositionWithAxis(Direction, TraceResult.FixedPosition_WorldSpace, NewFixedPosition, MaxInterpolateLength)
+			? InterpolatePositionWithAxis(Direction, TraceResult.FixedPosition_WorldSpace, NewFixedPosition, MaxInterpolateLength, Output.AnimInstanceProxy->GetDeltaSeconds())
 			: NewFixedPosition;
 
 //#ifdef UE_ENABLE_DEBUG_DRAWING 
@@ -105,7 +104,7 @@ void FTrace_AnimNode::GatherDebugData(FNodeDebugData& DebugData)
 	ComponentPose.GatherDebugData(DebugData);
 }
 
-FVector FTrace_AnimNode::InterpolatePositionWithAxis(const FVector& Axis, const FVector& BeforePosition, const FVector& NewPosition, float MaxLength)
+FVector FTrace_AnimNode::InterpolatePositionWithAxis(const FVector& Axis, const FVector& BeforePosition, const FVector& NewPosition, float MaxLength, float DeltaSeconds)
 {
 	FVector ToVector = NewPosition - BeforePosition;
 	FVector ProjectToAxis = ToVector.ProjectOnTo(Axis);
@@ -118,11 +117,11 @@ FVector FTrace_AnimNode::InterpolatePositionWithAxis(const FVector& Axis, const 
 
 		if (MaxLength > VectorLength)
 		{
-			ResultPosition += ProjectToAxis * VectorLength;
+			ResultPosition += ProjectToAxis * (VectorLength * DeltaSeconds);
 		}
 		else
 		{
-			ResultPosition += ProjectToAxis * MaxLength;
+			ResultPosition += ProjectToAxis * (MaxLength * DeltaSeconds);
 		}
 	}
 	else
