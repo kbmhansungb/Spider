@@ -27,24 +27,35 @@ UFootOffDataObject* UFootOffFunctionLibrary::GetFootOfDataObjectFromSkeletalMesh
 	return IFootOffInterface::Execute_GetFootOfDataObject(AnimInstance);
 }
 
-//void UFootOffFunctionLibrary::EnterAnimNotifyState(UFootOffDataObject* FootOffDataObject, const FName& BoneName)
+//void UFootOffAnimNotifyState::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration, const FAnimNotifyEventReference& EventReference)
 //{
-//	if (!FootOffDataObject)
-//	{
-//		UE_LOG(LogTemp, Error, TEXT("FootOffDataObject is not valid."));
-//		return;
-//	}
-//
-//	FootOffDataObject->EnterFootOffState(BoneName);
+//	Super::NotifyBegin(MeshComp, Animation, TotalDuration, EventReference);
 //}
 //
-//void UFootOffFunctionLibrary::ExitAnimNotifyState(UFootOffDataObject* FootOffDataObject, const FName& BoneName)
+//void UFootOffAnimNotifyState::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
 //{
-//	if (!FootOffDataObject)
+//	Super::NotifyEnd(MeshComp, Animation, EventReference);
+//}
+//
+//void UFootOffAnimNotifyState::OnAnimNotifyCreatedInEditor(FAnimNotifyEvent& ContainingAnimNotifyEvent)
+//{
+//	//const UAnimSequence* AnimSequence = Cast<const UAnimSequence>(ContainingAnimNotifyEvent.GetLinkedSequence());
+//	//const FReferenceSkeleton RefSkeleton = AnimSequence->GetSkeleton()->GetReferenceSkeleton();
+//
+//	//BoneOffset_ComponentSpace = GetComponentSpaceTransform(RefSkeleton, AnimSequence, ContainingAnimNotifyEvent.TrackIndex, ContainingAnimNotifyEvent.GetEndTriggerTime(), Boneindex);
+//}
+//
+//FTransform UFootOffAnimNotifyState::GetComponentSpaceTransform(const FReferenceSkeleton& RefSkeleton, const UAnimSequence* AnimSequence, int32 TrackIndex, float Time, int32 BoneIndex) const
+//{
+//	int32 ParentBone = RefSkeleton.GetParentIndex(BoneIndex);
+//	
+//	FTransform ComponentSpaceTransform;
+//	AnimSequence->GetBoneTransform(ComponentSpaceTransform, TrackIndex, Time, false);
+//
+//	if (ParentBone != INDEX_NONE)
 //	{
-//		UE_LOG(LogTemp, Error, TEXT("FootOffDataObject is not valid."));
-//		return;
+//		ComponentSpaceTransform *= GetComponentSpaceTransform(RefSkeleton, AnimSequence, TrackIndex, Time, BoneIndex);
 //	}
 //
-//	FootOffDataObject->ExitFootOffState(BoneName);
+//	return ComponentSpaceTransform;
 //}

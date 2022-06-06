@@ -49,3 +49,25 @@ protected:
 	//UFUNCTION(BlueprintCallable, Category = Edit)
 	//static void ExitAnimNotifyState(UFootOffDataObject* FootOffDataObject, const FName& BoneName);
 };
+
+UCLASS(DefaultToInstanced, editinlinenew)
+class UFootOffAnimNotifyState final : public UAnimNotifyState
+{
+	GENERATED_BODY()
+
+//public:
+//	virtual void NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration, const FAnimNotifyEventReference& EventReference) override;
+//	virtual void NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference) override;
+//
+//	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
+//	//FBoneReference TargetBone;
+//
+//	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+//	FVector BoneOffset_ComponentSpace;
+//private:
+//#if WITH_EDITOR
+//	virtual void OnAnimNotifyCreatedInEditor(FAnimNotifyEvent& ContainingAnimNotifyEvent) override;;
+//#endif
+//
+//	FTransform GetComponentSpaceTransform(const FReferenceSkeleton& RefSkeleton, const UAnimSequence* AnimSequence, int32 TrackIndex, float Time, int32 BoneIndex) const;
+};
